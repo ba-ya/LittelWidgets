@@ -247,7 +247,7 @@ qInstallMessageHandler([](QtMsgType type, const QMessageLogContext &context, con
 });
 ```
 
-![Snipaste_2025-01-09_11-27-50](D:\proj\1_proj_cundang\小组件\ReadMe.assets\Snipaste_2025-01-09_11-27-50.png)
+![Snipaste_2025-01-09_11-27-50](.\ReadMe.assets\Snipaste_2025-01-09_11-27-50.png)
 
 ## [单例切换语言](./0单例切换语言)
 
@@ -317,7 +317,7 @@ void MainWindow::chose_dir()
 
 ### 显示
 
-![image-20250113150558280](D:\proj\1_proj_cundang\小组件\ReadMe.assets\image-20250113150558280.png)
+![image-20250113150558280](.\ReadMe.assets\image-20250113150558280.png)
 
 ## tablewidget初始化
 
@@ -341,7 +341,7 @@ void MainWindow::chose_dir()
 
 ### 显示
 
-![image-20250113154915412](D:\proj\1_proj_cundang\小组件\ReadMe.assets\image-20250113154915412.png)
+![image-20250113154915412](.\ReadMe.assets\image-20250113154915412.png)
 
 ## [浮动窗口](./1浮动窗口)
 
@@ -352,7 +352,7 @@ dynamic_cast<FloatingWidget*>(widget_ascan[i][0])->setPosition(layout_abscan[i],
 
 ### 显示
 
-![Snipaste_2024-10-16_15-29-22](D:\proj\1_proj_cundang\小组件\ReadMe.assets\Snipaste_2024-10-16_15-29-22.png)
+![Snipaste_2024-10-16_15-29-22](.\ReadMe.assets\Snipaste_2024-10-16_15-29-22.png)
 
 ## [软键盘](./1软键盘)
 
@@ -360,9 +360,9 @@ dynamic_cast<FloatingWidget*>(widget_ascan[i][0])->setPosition(layout_abscan[i],
 
 ### 显示
 
-![image-20250109115313478](D:\proj\1_proj_cundang\小组件\ReadMe.assets\image-20250109115313478.png)
+![image-20250109115313478](.\ReadMe.assets\image-20250109115313478.png)
 
-![image-20250109115319043](D:\proj\1_proj_cundang\小组件\ReadMe.assets\image-20250109115319043.png)
+![image-20250109115319043](.\ReadMe.assets\image-20250109115319043.png)
 
 ## [带单位的dsb](./1带单位的dsb)
 
@@ -370,7 +370,7 @@ dynamic_cast<FloatingWidget*>(widget_ascan[i][0])->setPosition(layout_abscan[i],
 
 ### 显示
 
-![image-20250109121504418](D:\proj\1_proj_cundang\小组件\ReadMe.assets\image-20250109121504418.png)
+![image-20250109121504418](.\ReadMe.assets\image-20250109121504418.png)
 
 ## [测量值方块](./1测量值方块)
 
@@ -380,11 +380,11 @@ dynamic_cast<FloatingWidget*>(widget_ascan[i][0])->setPosition(layout_abscan[i],
 
 ### 显示
 
-![image-20250109121459364](D:\proj\1_proj_cundang\小组件\ReadMe.assets\image-20250109121459364.png)
+![image-20250109121459364](.\ReadMe.assets\image-20250109121459364.png)
 
 ## [tcg窗口](./1tcg)
 
 ### 显示
 
-![Snipaste_2024-10-16_15-29-53](D:\proj\1_proj_cundang\小组件\ReadMe.assets\Snipaste_2024-10-16_15-29-53.png)
+![Snipaste_2024-10-16_15-29-53](.\ReadMe.assets\Snipaste_2024-10-16_15-29-53.png)
 
