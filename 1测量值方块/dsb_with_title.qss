@@ -1,0 +1,31 @@
+﻿/*-----DoubleSpinBoxWithUnit in ValuePane---------*/
+QWidget#ValueWithUnit{
+    /*pm*/background-color: black;
+    /*am*/background-color: white;
+    /*pm*/border: 4px solid black;
+    /*am*/border: 4px solid white;
+    border-radius: 10px;
+    padding:5px;
+}
+QDoubleSpinBox#dsb_value{
+    font-size:22px;
+    /*pm*/background-color: black;
+    /*am*/background-color: white;
+    /*pm*/border: 1.5px solid black;
+    /*am*/border: 1.5px solid white;
+    border-radius:15px;
+    padding: 0px;
+}
+QPushButton#btn_unit{
+    font-size: 17px;
+    text-align: left;
+    /*pm*/background-color: black;
+    /*am*/background-color: white;
+    /*pm*/color: white;
+    /*am*/color: #333333;
+    /*pm*/border: 1.5px solid black;
+    /*am*/border: 1.5px solid white;
+    border-radius:15px;
+    padding: 0px;
+    padding-right: 10px;
+}
