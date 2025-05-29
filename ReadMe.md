@@ -10,6 +10,20 @@ pro文件
 RC_ICONS = xxx.ico
 ```
 
+cmake
+
+```
+// icon.rc内容
+IDI_ICON1 ICON DISCARDABLE "img.ico"
+```
+
+```
+qt_add_executable(...
+	...
+	icon.rc
+)
+```
+
 ## render增删std::vector<vtkSmartPointer<T>>
 
 ```c++
@@ -84,8 +98,6 @@ void showTooltip(const QPointF &point, bool state) {
     }
 ```
 
-
-
 # *Common*
 
 ## 文件操作
@@ -97,6 +109,9 @@ void showTooltip(const QPointF &point, bool state) {
 auto list_dir = QDir(dir_chosen).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 // 获取该路径下所有文件
 auto list_file = QDir(dir_chosen).entryList(QDir::Files);
+
+QStringList filters = { "*.*"};
+auto list_file = QDir(dir_shot).entryList(filters, QDir::Files, QDir::Name);
 ```
 
 ```c++
@@ -106,6 +121,16 @@ auto list_file = QDir(dir_chosen).entryList(QDir::Files);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         table->setItem(i, 0, item);
     }
+```
+### 获取base name
+
+```c++
+// 从目录名, 获取目录名
+QDir(dir_shot).dirName()
+//从文件名, 获取文件名
+QFileInfo info(image_path);
+QString dir = info.absolutePath();
+QFileInfo(file).fileName()
 ```
 
 ### 如果文件(目录)不存在创建文件(目录)
@@ -141,6 +166,43 @@ void remove_all_files_from(QString &dir_name) {
             d.remove(a);
         }
     }
+```
+
+| 方法                        | 说明                                                  | 示例结果（example.txt） |
+| --------------------------- | ----------------------------------------------------- | ----------------------- |
+| fileInfo.baseName()         | 不带扩展名                                            | example                 |
+| fileInfo.suffix()           | 只有扩展名                                            | txt                     |
+| fileInfo.fileName()         | 带扩展名的文件名                                      | example.txt             |
+| fileInfo.completeBaseName() | 如果文件是多重扩展名（如 .tar.gz），可得完整 basename | example.tar             |
+
+## 筛选出符合条件的目录
+
+```c++
+std::pair<QString, QStringList> get_data_dir_and_list_base_names() {
+        QDir base_dir = QDir(dir_data);
+        auto sub_dirs = base_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+        QStringList valid_dirs;
+        for (const QString& dir_base_name : sub_dirs) {
+            // 基于当前目录构建路径
+            QDir sub_dir(base_dir.absoluteFilePath(dir_base_name));
+            // 判断该文件是否存在于此目录,参数是base name即可,不需要全路径
+            if (sub_dir.exists(file_data_bin) && sub_dir.exists(file_data_cfg)) {
+                valid_dirs << dir_base_name;
+            }
+        }
+        return { QDir(dir_data).dirName().remove("store_"), valid_dirs };
+    }
+```
+
+
+
+## 截图
+
+QWidget自带截图
+
+```c++
+QPixmap pixmap = this->centralWidget()->grab();
+pixmap.save(file);
 ```
 
 ## VTK_MODULE_INIT对应头文件
@@ -319,7 +381,9 @@ void MainWindow::chose_dir()
 
 ![image-20250113150558280](./ReadMe.assets/image-20250113150558280.png)
 
-## tablewidget初始化
+## tablewidget
+
+初始化
 
 横向表头拉伸
 
@@ -338,6 +402,25 @@ void MainWindow::chose_dir()
         // do something
     });
 ```
+
+### tablewidget填充行
+
+```
+ui->table->setRowCount(0);
+
+    int cnt_row = parts.size() / 2;
+    ui->table->setRowCount(cnt_row);
+
+    for (int i = 0; i < cnt_row; ++i) {
+        int beam = parts.at(i * 2).toInt();
+        int point = parts.at(i * 2 + 1).toInt();
+
+        ui->table->setItem(i, 0, new QTableWidgetItem(QString::number(beam)));
+        ui->table->setItem(i, 1, new QTableWidgetItem(QString::number(point)));
+    }
+```
+
+
 
 ### 显示
 
