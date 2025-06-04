@@ -55,14 +55,13 @@ TCGWidget::~TCGWidget()
 }
 
 void TCGWidget::set_param_g(in::ParamGroup* g) {
-    ui->tableWidget_tcg->blockSignals(true);
 
     this->g = g;
     update_table();
-    ui->tableWidget_tcg->blockSignals(false);
 }
 
 void TCGWidget::update_table() {
+    ui->tableWidget_tcg->blockSignals(true);
     ui->tableWidget_tcg->setRowCount(0);
     for (int i = 0; i < g->insp_elect_tcg.depth_tcg.size(); i++) {
         ui->tableWidget_tcg->insertRow(i);
@@ -73,6 +72,7 @@ void TCGWidget::update_table() {
         CustomDelegate* delegate = new CustomDelegate(ui->tableWidget_tcg);
         ui->tableWidget_tcg->setItemDelegateForColumn(1, delegate);
     }
+    ui->tableWidget_tcg->blockSignals(false);
 }
 
 void TCGWidget::on_lineEdit_tcg_depth_returnPressed() { emit ui->pushButton_tcg_add->released(); }
@@ -93,7 +93,7 @@ void TCGWidget::on_pushButton_tcg_add_released() {
         QMessageBox::information(this, u8"警告", u8"增益为空!");
     } else {
         int index = rowCount;
-        int new_depth = tcg_depth.toInt();
+        double new_depth = tcg_depth.toDouble();
 
         auto add_row = [this, rowCount, tcg_depth, tcg_gain](int index) {
             ui->tableWidget_tcg->insertRow(index);
@@ -113,14 +113,14 @@ void TCGWidget::on_pushButton_tcg_add_released() {
         };
 
         for (int i = 0; i < index; i++) {
-            int existing_depth = ui->tableWidget_tcg->item(i, 0)->text().toInt();
-            if (new_depth == existing_depth) {
+            double existing_depth = ui->tableWidget_tcg->item(i, 0)->text().toDouble();
+            if (std::abs(new_depth - existing_depth) <= 0.2) {
                 index = -1;
                 ui->tableWidget_tcg->item(i, 1)->setText(tcg_gain);
                 ui->tableWidget_tcg->scrollToItem(ui->tableWidget_tcg->item(i, 0));
                 break;
             }
-            if (new_depth < existing_depth) {
+            if (new_depth < existing_depth - 0.2) {
                 index = i;
                 break;
             }
@@ -139,6 +139,11 @@ void TCGWidget::on_pushButton_tcg_add_released() {
 }
 
 void TCGWidget::on_pushButton_tcg_del_released() {
+    int cnt_selected = ui->tableWidget_tcg->selectedItems().size();
+    if (0 == cnt_selected) {
+        qDebug() << "TCG Table: No rows selected.";
+        return;
+    }
     ui->tableWidget_tcg->blockSignals(true);
     g->insp_elect_tcg.depth_tcg.erase(g->insp_elect_tcg.depth_tcg.begin() + ui->tableWidget_tcg->currentRow());
     g->insp_elect_tcg.gain_tcg.erase(g->insp_elect_tcg.gain_tcg.begin() + ui->tableWidget_tcg->currentRow());

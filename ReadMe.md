@@ -111,6 +111,8 @@ QPixmap pixmap = this->centralWidget()->grab();
 pixmap.save(file);
 ```
 
+## [qt控件](./ReadMe_controls.md)
+
 ## VTK_MODULE_INIT对应头文件
 
 ```c++

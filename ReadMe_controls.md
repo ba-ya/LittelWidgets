@@ -1,7 +1,5 @@
 [TOC]
 
-
-
 # QToolButton
 
 ## 1.自带箭头,setArrowType
@@ -45,6 +43,18 @@ InstantPopup,立即弹出,本身按钮的槽被覆盖,只剩下弹出功能
 ```c++
 // 不要自带小箭头
 ui->btn_t->setStyleSheet("QToolButton::menu-indicator { image: none; }");
+```
+
+# QDialog
+
+## 1.显示最大化,关闭按钮;有阻塞动画
+
+点击其他窗口,阻塞窗口会闪烁
+
+```
+auto dlg = new SettingPage(this);  // 设置父窗口
+dlg->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
+dlg->exec();  // 阻塞，模态效果完整
 ```
 
 
