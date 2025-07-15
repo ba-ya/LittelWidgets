@@ -1,4 +1,42 @@
-[TOC]
+- [*Qt常用代码*](#qt常用代码)
+  - [添加图标](#添加图标)
+  - [获取当前时间](#获取当前时间)
+  - [Widget关闭时发送destroyed信号](#widget关闭时发送destroyed信号)
+  - [浏览器打开目录或文件](#浏览器打开目录或文件)
+  - [正则](#正则)
+  - [chartview](#chartview)
+  - [editingFinished含义](#editingfinished含义)
+  - [~~lambda绑定信号,QOverload~~](#lambda绑定信号qoverload)
+  - [Combobox居中显示](#combobox居中显示)
+- [*Common*](#common)
+  - [文件操作](#文件操作)
+  - [移动到新线程](#移动到新线程)
+  - [截图](#截图)
+  - [qt控件](#qt控件)
+  - [VTK\_MODULE\_INIT对应头文件](#vtk_module_init对应头文件)
+  - [vtk交互样式](#vtk交互样式)
+  - [按钮点击弹出窗口](#按钮点击弹出窗口)
+  - [dump文件](#dump文件)
+  - [日志](#日志)
+  - [单例切换语言](#单例切换语言)
+  - [单例切换样式](#单例切换样式)
+- [*CommonWidget*](#commonwidget)
+  - [带act的lineEdit](#带act的lineedit)
+    - [显示](#显示)
+  - [tablewidget](#tablewidget)
+    - [tablewidget填充行](#tablewidget填充行)
+    - [显示](#显示-1)
+  - [浮动窗口](#浮动窗口)
+    - [显示](#显示-2)
+  - [软键盘](#软键盘)
+    - [显示](#显示-3)
+  - [带单位的dsb](#带单位的dsb)
+    - [显示](#显示-4)
+  - [测量值方块](#测量值方块)
+    - [显示](#显示-5)
+  - [tcg窗口](#tcg窗口)
+    - [显示](#显示-6)
+
 
 # *Qt常用代码*
 
@@ -24,30 +62,10 @@ qt_add_executable(...
 )
 ```
 
-## render增删std::vector<vtkSmartPointer<T>>
+## 获取当前时间
 
-```c++
-template <typename T> void add_entity(std::vector<vtkSmartPointer<T>>& entities);
-template <typename T> void remove_entity(std::vector<vtkSmartPointer<T>>& entities, bool is_clear = true);
 ```
-
-```c++
-template <typename T>
-void Slice3dWidget::add_entity(std::vector<vtkSmartPointer<T>>& entities) {
-    for (auto& entity : entities) {
-        render->AddActor(entity);
-    }
-}
-
-template <typename T>
-void Slice3dWidget::remove_entity(std::vector<vtkSmartPointer<T>>& entities, bool is_clear) {
-    for (auto& entity : entities) {
-        render->RemoveActor(entity);
-    }
-    if (is_clear) {
-        entities.clear();
-    }
-}
+QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm")
 ```
 
 ## Widget关闭时发送destroyed信号
@@ -66,6 +84,18 @@ connect(this, &QObject::destroyed, this, [this]() {
     QString absolute_path = fileInfo.absoluteFilePath();
     QDesktopServices::openUrl(QUrl::fromLocalFile(absolute_path));
 ```
+
+## 正则
+
+```c++
+ QRegularExpression regex(R"(namespace\s*(\w+)\s*\{)");
+            QRegularExpressionMatch match = regex.match(content);
+            if (match.hasMatch()) {
+                item_str += QString("(%1)").arg(match.captured(1));
+            }
+```
+
+
 
 ## chartview
 
@@ -98,9 +128,81 @@ void showTooltip(const QPointF &point, bool state) {
     }
 ```
 
+## editingFinished含义
+
+`QLineEdit`中`void editingFinished()`表示 在 `回车` 或者 `返回` 或者 `行编辑失去焦点`的情况发送信号
+
+## ~~lambda绑定信号,QOverload~~
+
+```c++
+QOverload<int>::of(&QComboBox::currentIndexChanged) // Qt6弃用QString参数
+```
+
+```c++
+QOverload<int>::of(&QSpinBox::valueChanged) // Qt6弃用QString参数
+```
+
+## Combobox居中显示
+
+```c++
+	auto model = static_cast<QStandardItemModel*>(ui->frequence->model());
+    for (int i = 0; i < ui->frequence->count(); i++) {
+        model->item(i)->setTextAlignment(Qt::AlignCenter);
+    }
+```
+
 # *Common*
 
 ## [文件操作](./ReadMe_file.md)
+
+## 移动到新线程
+
+```cpp
+    // mainwindow.cpp
+    data_proc = new DataProcTfm();
+    thread_data = new QThread();
+    data_proc->moveToThread(thread_data);
+    connect(thread_data, &QThread::started, data_proc, &DataProcTfm::thread_start);
+    connect(thread_data, &QThread::finished, data_proc, &DataProcTfm::thread_stop);
+
+    qDebug() << "this:" << QThread::currentThreadId();
+    thread_data->start();
+```
+
+```cpp
+void DataProcTfm::thread_start()
+{
+    qDebug() << "thread_start:"<< QThread::currentThreadId();
+    timer = new QTimer();
+    connect(timer, &QTimer::timeout, this, &DataProcTfm::on_timer);
+
+    connect(this, &DataProcTfm::start_data_flow, this, [this]() {
+        if (timer->isActive()) {
+            return;
+        }
+        timer->start(interval_t);
+        qDebug() << "start_data_flow";
+    });
+
+    connect(this, &DataProcTfm::stop_data_flow, this, [this]() {
+        timer->stop();
+        qDebug() << "stop_data_flow";
+    });
+
+    connect(this, &DataProcTfm::set_prop, this, [this](int x, int y, int z) {
+        cnt_x = x;
+        cnt_y = y;
+        cnt_z = z;
+        qDebug() << "set_prop, cnt:" << cnt_x << "," << cnt_y << "," << cnt_z;
+    });
+}
+void DataProcTfm::thread_stop()
+{
+    timer->stop();
+}
+```
+
+
 
 ## 截图
 
@@ -183,11 +285,11 @@ void Inspect::on_pop_ascan_released()
         box_status->get_ascan_widget()->activateWindow();
         return;
     }
-    auto ascan_widget = new AscanWidgetView();
-    box_status->set_ascan_widget(ascan_widget);
-    ascan_widget->setAttribute(Qt::WA_DeleteOnClose);
-    connect(ascan_widget, &QObject::destroyed, this, [this]() { box_status->set_ascan_widget(nullptr); });
-    ascan_widget->show();
+    auto widget = new AscanWidgetView();
+    box_status->set_ascan_widget(widget);
+    widget->setAttribute(Qt::WA_DeleteOnClose);
+    connect(widget, &QObject::destroyed, this, [this]() { box_status->set_ascan_widget(nullptr); });
+    widget->show();
 }
 ```
 
@@ -328,7 +430,7 @@ ui->table->setRowCount(0);
     }
 ```
 
-
+当你使用 `setCellWidget()` 放入任意控件（如 `QCheckBox`、`QLineEdit`、`QPushButton` 等），这个控件就**脱离了 `QTableWidgetItem` 的控制范围**，**它的行为和信号不会触发 `QTableWidget` 的原生信号**，你必须自己手动连接和管理它们。
 
 ### 显示
 

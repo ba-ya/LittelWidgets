@@ -17,6 +17,24 @@ QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 LIBS += -lDbgHelp
 ```
 
+## cmake
+
+```
+# 设置 Release 构建时也包含调试信息
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_WITH_DEBUG_INFO}")
+set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE_WITH_DEBUG_INFO}")
+
+# 对于链接器标志，通常默认已经启用了带有调试信息的 Release 模式（取决于编译器）
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE_WITH_DEBUG_INFO}")
+
+# 链接 DbgHelp 库（仅在 Windows 下有效）
+if(WIN32)
+    target_link_libraries(YourTargetName PRIVATE Dbghelp)
+endif()
+```
+
+
+
 # +=gui
 
 ## `main.h`
