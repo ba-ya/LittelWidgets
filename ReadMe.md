@@ -1,3 +1,6 @@
+- [拆分出另外文件](#拆分出另外文件)
+  - [文件操作](#文件操作)
+  - [命名规则](#命名规则)
 - [*Qt常用代码*](#qt常用代码)
   - [添加图标](#添加图标)
   - [获取当前时间](#获取当前时间)
@@ -9,7 +12,7 @@
   - [~~lambda绑定信号,QOverload~~](#lambda绑定信号qoverload)
   - [Combobox居中显示](#combobox居中显示)
 - [*Common*](#common)
-  - [文件操作](#文件操作)
+  - [生成随机数](#生成随机数)
   - [移动到新线程](#移动到新线程)
   - [截图](#截图)
   - [qt控件](#qt控件)
@@ -36,7 +39,12 @@
     - [显示](#显示-5)
   - [tcg窗口](#tcg窗口)
     - [显示](#显示-6)
+  - [显示图片的graphicsview](#显示图片的graphicsview)
 
+
+# 拆分出另外文件
+## [文件操作](./ReadMe_file.md)
+## 命名规则
 
 # *Qt常用代码*
 
@@ -153,7 +161,39 @@ QOverload<int>::of(&QSpinBox::valueChanged) // Qt6弃用QString参数
 
 # *Common*
 
-## [文件操作](./ReadMe_file.md)
+## 生成随机数
+
+在 **Qt6** 中生成随机数，推荐使用 **C++11 标准库的 `<random>`**，因为 Qt6 自身不再强调使用 `qrand()` / `qsrand()` 等旧接口，它们已逐渐被淘汰。
+
+```c++
+#include <random>
+
+// 全局或类成员中定义随机引擎和分布
+std::random_device rd;                              // 用于种子
+std::mt19937 gen(rd());                             // Mersenne Twister 随机数引擎
+std::uniform_int_distribution<> dist(0, 99);        // 均匀分布 [0, 99]
+
+// 使用时调用
+int randomValue = dist(gen);                        // 每次调用都会返回一个随机整数
+```
+
+```c++
+std::normal_distribution<> dist(50.0, 10.0); // 均值50，标准差10
+
+double generateClampedNormal(double min, double max) {
+    double val;
+    do {
+        val = dist(gen);
+    } while (val < min || val > max);
+    return val;
+}
+```
+
+| 类型                                     | 示例         | 用途         |
+| ---------------------------------------- | ------------ | ------------ |
+| `std::uniform_int_distribution<int>`     | `[0, 10]`    | 均匀分布整数 |
+| `std::uniform_real_distribution<double>` | `[0.0, 1.0]` | 均匀分布小数 |
+| `std::normal_distribution<>`             | `均值、方差` | 高斯分布     |
 
 ## 移动到新线程
 
@@ -359,7 +399,9 @@ void ValuePane::update_mode(int mode) {
 
 ```c++
     auto act = new QAction(this);
-    act->setIcon(QIcon(":/image/folder.svg"));
+    // act->setIcon(QIcon(":/image/folder.svg"));
+    // 或者可以用qt自带的主题 
+    act->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen));
     ui->file->addAction(act, QLineEdit::TrailingPosition);
     connect(act, &QAction::triggered, this, &MainWindow::chose_file);
     connect(act, &QAction::triggered, this, &MainWindow::chose_dir);
@@ -481,3 +523,8 @@ dynamic_cast<FloatingWidget*>(widget_ascan[i][0])->setPosition(layout_abscan[i],
 
 ![Snipaste_2024-10-16_15-29-53](./ReadMe.assets/Snipaste_2024-10-16_15-29-53.png)
 
+## [显示图片的graphicsview](./1显示图片的graphicsview)
+
+显示
+
+![image-20250718151859695](ReadMe.assets/image-20250718151859695.png)
