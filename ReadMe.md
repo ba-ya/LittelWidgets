@@ -1,6 +1,9 @@
 - [拆分出另外文件](#拆分出另外文件)
   - [文件操作](#文件操作)
   - [命名规则](#命名规则)
+  - [c++](#c)
+  - [Cmake](#cmake)
+  - [Qt标准控件](#qt标准控件)
 - [*Qt常用代码*](#qt常用代码)
   - [添加图标](#添加图标)
   - [获取当前时间](#获取当前时间)
@@ -12,6 +15,7 @@
   - [~~lambda绑定信号,QOverload~~](#lambda绑定信号qoverload)
   - [Combobox居中显示](#combobox居中显示)
 - [*Common*](#common)
+  - [Json读取和保存](#json读取和保存)
   - [生成随机数](#生成随机数)
   - [移动到新线程](#移动到新线程)
   - [截图](#截图)
@@ -44,7 +48,13 @@
 
 # 拆分出另外文件
 ## [文件操作](./ReadMe_file.md)
-## 命名规则
+## [命名规则](./readme_命名相关)
+
+## [c++](./readme_c++.md)
+
+## [Cmake](./ReadMe_cmake.md)
+
+## [Qt标准控件](./ReadMe_controls.md)
 
 # *Qt常用代码*
 
@@ -103,8 +113,6 @@ connect(this, &QObject::destroyed, this, [this]() {
             }
 ```
 
-
-
 ## chartview
 
 tooltip
@@ -160,6 +168,50 @@ QOverload<int>::of(&QSpinBox::valueChanged) // Qt6弃用QString参数
 ```
 
 # *Common*
+
+## Json读取和保存
+
+```c++
+ void save(const QString &file) {
+        QJsonObject root;
+
+        QJsonObject device;
+        device["_comment"] = "#0-1:USB/PCIE";
+        device["type"] = device_type;
+        root["device"] = device;
+
+        QFile saveFile(file);
+        if (!saveFile.open(QIODevice::WriteOnly)) {
+            qWarning() << "Couldn't open file for saving:" << file;
+            return;
+        }
+        saveFile.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+    }
+```
+
+```c++
+ void load(const QString &file) {
+        QFile configFile(file);
+        if (!configFile.open(QIODevice::ReadOnly)) {
+            qWarning() << "Cannot open config file, using default values.";
+            return;
+        }
+
+        QByteArray jsonData = configFile.readAll();
+        configFile.close();
+
+        QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+        if (doc.isNull() || !doc.isObject()) {
+            qWarning() << "Invalid JSON format, using default values.";
+            return;
+        }
+
+        QJsonObject root = doc.object();
+
+        QJsonObject device = root["device"].toObject();
+        device_type = device.value("type").toInt(device_type);
+    }
+```
 
 ## 生成随机数
 

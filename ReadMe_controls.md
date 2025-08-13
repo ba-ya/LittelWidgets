@@ -11,6 +11,7 @@
   - [初始化](#初始化)
   - [填充行](#填充行)
   - [`setCellWidget()`](#setcellwidget)
+  - [滚动到最后一行](#滚动到最后一行)
 
 # 绑定信号
 
@@ -181,4 +182,10 @@ ui->table->setRowCount(0);
 ## `setCellWidget()` 
 
 当你使用 `setCellWidget()` 放入任意控件（如 `QCheckBox`、`QLineEdit`、`QPushButton` 等），这个控件就**脱离了 `QTableWidgetItem` 的控制范围**，**它的行为和信号不会触发 `QTableWidget` 的原生信号**，你必须自己手动连接和管理它们。
+
+## 滚动到最后一行
+
+```c++
+ui->table->scrollToBottom();
+```
 
