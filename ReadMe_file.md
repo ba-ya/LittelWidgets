@@ -77,3 +77,73 @@ void remove_all_files_from(QString &dir_name) {
 | 获取上一级目录                   | dir.cdUp(); dir.path();                       | QFileInfo("a/b.txt").absoluteDir().path();         | QDir 可以 cdUp()，QFileInfo 可取 absoluteDir()       |
 | 获取完整路径（含文件名）         | —                                             | QFileInfo("a/b.txt").absoluteFilePath();           | 完整路径 + 文件名                                    |
 | 获取相对路径                     | QDir::relativeFilePath(fullPath)              | —                                                  | 需提供 base QDir 与目标路径                          |
+
+# 重名目录
+
+```c++
+    // 处理重名目录, 后面加"(%1)",
+    // 如果有缺失的目录,先填充缺失目录
+    void adjust_base_name(const QString &dir_load, QString &base_name) {
+        auto &&get_version_status_from_dir = [&](const QString &dir_load,
+                                          const QString &base_name) {
+            QDir directory(dir_load);
+
+            // 获取所有子目录
+            auto dirList = directory.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+            std::map<int, bool> version_status;
+
+            for (const auto &a : dirList) {
+                QString dir_name = a.fileName();
+
+                if (dir_name.startsWith(base_name)) {
+                    QRegularExpression regex("\\((\\d+)\\)");  // 匹配 "(数字)" 的格式
+                    QRegularExpressionMatch match = regex.match(dir_name);
+
+                    if (dir_name == base_name) {
+                        version_status[0] = true;
+                    }
+                    if (match.hasMatch()) {
+                        int version = match.captured(1).toInt();
+                        version_status[version] = true;
+                    }
+                }
+            }
+            // 确定最大版本号
+            int max_version = 0;
+            if (!version_status.empty()) {
+                max_version = version_status.rbegin()->first;  // 反向迭代获取最大版本号
+            }
+
+            // 填充缺失的版本
+            for (int i = 0; i <= max_version; ++i) {
+                if (version_status.find(i) == version_status.end()) {
+                    version_status[i] = false;  // 如果某版本号没有出现，标记为缺失
+                }
+            }
+
+            return version_status;
+        };
+
+        auto version_status = get_version_status_from_dir(dir_load, base_name);
+        auto is_missing = false;
+        if (!version_status.empty()) {
+            // missing "save(0)" = missing "save"
+            if (version_status[0] == false) {
+                return;
+            }
+
+            auto max_version = version_status.rbegin()->first;
+            for (int i = 0; i <= max_version; ++i) {
+                if (version_status[i] == false) {
+                    is_missing = true;
+                    base_name += QString("(%1)").arg(i);
+                    break;
+                }
+            }
+            if (!is_missing) {
+                base_name += QString("(%1)").arg(max_version + 1);
+            }
+        }
+    }
+```
+

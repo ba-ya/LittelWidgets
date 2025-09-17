@@ -19,8 +19,7 @@
   - [生成随机数](#生成随机数)
   - [移动到新线程](#移动到新线程)
   - [截图](#截图)
-  - [qt控件](#qt控件)
-  - [VTK\_MODULE\_INIT对应头文件](#vtk_module_init对应头文件)
+  - [VTK\_MODULE\_INIT对应头文件, ContextView初始化需要](#vtk_module_init对应头文件-contextview初始化需要)
   - [vtk交互样式](#vtk交互样式)
   - [按钮点击弹出窗口](#按钮点击弹出窗口)
   - [dump文件](#dump文件)
@@ -294,8 +293,6 @@ void DataProcTfm::thread_stop()
 }
 ```
 
-
-
 ## 截图
 
 QWidget自带截图
@@ -305,9 +302,7 @@ QPixmap pixmap = this->centralWidget()->grab();
 pixmap.save(file);
 ```
 
-## [qt控件](./ReadMe_controls.md)
-
-## VTK_MODULE_INIT对应头文件
+## VTK_MODULE_INIT对应头文件, ContextView初始化需要
 
 ```c++
 #include <vtkAutoInit.h>

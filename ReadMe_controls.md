@@ -1,10 +1,14 @@
 
-- [绑定信号](#绑定信号)
+- [绑定信号QOverload](#绑定信号qoverload)
 - [QToolButton](#qtoolbutton)
   - [1.自带箭头,setArrowType](#1自带箭头setarrowtype)
   - [2.弹出Action,setPopupMode](#2弹出actionsetpopupmode)
 - [QDialog](#qdialog)
   - [1.显示最大化,关闭按钮;有阻塞动画](#1显示最大化关闭按钮有阻塞动画)
+- [QMessageBox](#qmessagebox)
+  - [timeout后自动消失](#timeout后自动消失)
+- [QCombobox](#qcombobox)
+  - [下拉列表顺序排列](#下拉列表顺序排列)
 - [QTablewidget](#qtablewidget)
   - [添加复选框,勾选选中整行](#添加复选框勾选选中整行)
     - [`QTableWidgetSelectionRange(topRow, leftColumn, bottomRow, rightColumn)`](#qtablewidgetselectionrangetoprow-leftcolumn-bottomrow-rightcolumn)
@@ -13,7 +17,7 @@
   - [`setCellWidget()`](#setcellwidget)
   - [滚动到最后一行](#滚动到最后一行)
 
-# 绑定信号
+# 绑定信号QOverload
 
 ```c++
 QOverload<int>::of(&QSpinBox::valueChanged),
@@ -74,6 +78,53 @@ ui->btn_t->setStyleSheet("QToolButton::menu-indicator { image: none; }");
 auto dlg = new SettingPage(this);  // 设置父窗口
 dlg->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 dlg->exec();  // 阻塞，模态效果完整
+```
+
+# QMessageBox
+
+```c++
+// 阻塞, 静态
+QMessageBox::information(this, "Title", "Content");
+```
+
+```c++
+// 阻塞, 自定义
+QMessageBox msg(this);
+msg.setWindowTitle("Title");           // 设置标题
+msg.setText("Content");               // 设置主文本
+msg.setIcon(QMessageBox::Information);                   // 设置图标为“信息”图标
+msg.setStandardButtons(QMessageBox::Ok);                 // 设置按钮为“OK”
+msg.exec();                                              // 以模态方式运行
+```
+
+## timeout后自动消失 
+
+```c++
+void show_toast(QWidget *parent, const QString &title, const QString &content, int timeout_ms)
+{
+    QMessageBox *msg = new QMessageBox(parent);
+    msg->setAttribute(Qt::WA_DeleteOnClose); // 关闭时自动 delete
+    msg->setWindowTitle(title);
+    msg->setText(content);
+    msg->setIcon(QMessageBox::Information);
+    msg->setStandardButtons(QMessageBox::NoButton);
+    msg->show();
+    QTimer::singleShot(timeout_ms, msg, [msg]() {
+        msg->done(QMessageBox::Ok);
+    });
+}
+```
+
+# QCombobox
+
+## 下拉列表顺序排列
+
+[link]([Qt中QComboBox下拉列表（popup）位置与样式的控制_qt popup-CSDN博客](https://blog.csdn.net/imred/article/details/78158238))
+
+```css
+QComboBox{
+    combobox-popup:0;
+}
 ```
 
 # QTablewidget
