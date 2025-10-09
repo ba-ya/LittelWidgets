@@ -1,9 +1,11 @@
 - [获取该路径目录/文件, 不带全路径](#获取该路径目录文件-不带全路径)
 - [如果文件(目录)不存在创建文件(目录)](#如果文件目录不存在创建文件目录)
 - [删除目录下所有文件](#删除目录下所有文件)
+- [删除某文件](#删除某文件)
+- [重名目录](#重名目录)
 
 
-### 获取该路径目录/文件, 不带全路径
+# 获取该路径目录/文件, 不带全路径
 
 ```c++
 // 获取该路径下所有目录
@@ -24,7 +26,7 @@ auto list_file = QDir(dir_shot).entryList(filters, QDir::Files, QDir::Name);
     }
 ```
 
-### 如果文件(目录)不存在创建文件(目录)
+# 如果文件(目录)不存在创建文件(目录)
 
 ```c++
 // 文件
@@ -47,7 +49,7 @@ auto list_file = QDir(dir_shot).entryList(filters, QDir::Files, QDir::Name);
         }
 ```
 
-### 删除目录下所有文件
+# 删除目录下所有文件
 
 ```c++
 void remove_all_files_from(QString &dir_name) {
@@ -57,6 +59,18 @@ void remove_all_files_from(QString &dir_name) {
             d.remove(a);
         }
     }
+```
+
+# 删除某文件
+
+```c++
+file.remove()
+```
+
+# 拷贝
+
+```
+QFile(name_src).copy(name_dst)
 ```
 
 | 功能                             | QDir 示例                                     | QFileInfo 示例                                     | 说明                                                 |
@@ -77,6 +91,10 @@ void remove_all_files_from(QString &dir_name) {
 | 获取上一级目录                   | dir.cdUp(); dir.path();                       | QFileInfo("a/b.txt").absoluteDir().path();         | QDir 可以 cdUp()，QFileInfo 可取 absoluteDir()       |
 | 获取完整路径（含文件名）         | —                                             | QFileInfo("a/b.txt").absoluteFilePath();           | 完整路径 + 文件名                                    |
 | 获取相对路径                     | QDir::relativeFilePath(fullPath)              | —                                                  | 需提供 base QDir 与目标路径                          |
+
+
+
+
 
 # 重名目录
 

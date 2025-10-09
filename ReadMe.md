@@ -4,18 +4,19 @@
   - [c++](#c)
   - [Cmake](#cmake)
   - [Qt标准控件](#qt标准控件)
+  - [QString](#qstring)
+  - [QImageQPixmap](#qimageqpixmap)
 - [*Qt常用代码*](#qt常用代码)
   - [添加图标](#添加图标)
   - [获取当前时间](#获取当前时间)
   - [Widget关闭时发送destroyed信号](#widget关闭时发送destroyed信号)
+  - [Widget设置关闭按钮不可用\& ~Qt::WindowCloseButtonHint](#widget设置关闭按钮不可用-qtwindowclosebuttonhint)
   - [浏览器打开目录或文件](#浏览器打开目录或文件)
   - [正则](#正则)
   - [chartview](#chartview)
-  - [editingFinished含义](#editingfinished含义)
-  - [~~lambda绑定信号,QOverload~~](#lambda绑定信号qoverload)
-  - [Combobox居中显示](#combobox居中显示)
 - [*Common*](#common)
   - [Json读取和保存](#json读取和保存)
+    - [JsonArray](#jsonarray)
   - [生成随机数](#生成随机数)
   - [移动到新线程](#移动到新线程)
   - [截图](#截图)
@@ -53,7 +54,11 @@
 
 ## [Cmake](./ReadMe_cmake.md)
 
-## [Qt标准控件](./ReadMe_controls.md)
+## [Qt标准控件](./ReadMe_controls.md "悬停")
+
+## [QString](./readme_QString.md)
+
+## [QImageQPixmap](./readme_image_pixmap.md)
 
 # *Qt常用代码*
 
@@ -92,6 +97,12 @@ this->setAttribute(Qt::WA_DeleteOnClose);
 connect(this, &QObject::destroyed, this, [this]() {
     //...
 });
+```
+
+## Widget设置关闭按钮不可用& ~Qt::WindowCloseButtonHint
+
+```c++
+ setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
 ```
 
 ## 浏览器打开目录或文件
@@ -143,29 +154,6 @@ void showTooltip(const QPointF &point, bool state) {
     }
 ```
 
-## editingFinished含义
-
-`QLineEdit`中`void editingFinished()`表示 在 `回车` 或者 `返回` 或者 `行编辑失去焦点`的情况发送信号
-
-## ~~lambda绑定信号,QOverload~~
-
-```c++
-QOverload<int>::of(&QComboBox::currentIndexChanged) // Qt6弃用QString参数
-```
-
-```c++
-QOverload<int>::of(&QSpinBox::valueChanged) // Qt6弃用QString参数
-```
-
-## Combobox居中显示
-
-```c++
-	auto model = static_cast<QStandardItemModel*>(ui->frequence->model());
-    for (int i = 0; i < ui->frequence->count(); i++) {
-        model->item(i)->setTextAlignment(Qt::AlignCenter);
-    }
-```
-
 # *Common*
 
 ## Json读取和保存
@@ -210,6 +198,21 @@ QOverload<int>::of(&QSpinBox::valueChanged) // Qt6弃用QString参数
         QJsonObject device = root["device"].toObject();
         device_type = device.value("type").toInt(device_type);
     }
+```
+
+### JsonArray
+
+```c++
+QJsonArray beam_array;
+auto parts = ui->table->item(j, 1)->text().split(";");
+auto cnt_id_trans = parts.size() - 1;
+for (int k = 0; k < cnt_id_trans; k++) {
+   	auto k_value = parts[k].toInt();
+ 	QJsonObject id_trans_obj;
+ 	id_trans_obj[QString("id_trans %1").arg(k)] = k_value;
+	beam_array.push_back(id_trans_obj);
+}
+group_obj[QString("beam %1").arg(j)] = beam_array;
 ```
 
 ## 生成随机数
@@ -539,6 +542,33 @@ dynamic_cast<FloatingWidget*>(widget_ascan[i][0])->setPosition(layout_abscan[i],
 ## [软键盘](./1软键盘)
 
 需要和[单例切换样式中的qss](./0单例切换样式/style.qss)配套使用,查找'softboard'
+
+注意:如果使用焦点触发软键盘, 控件不能放到Dialog里面
+
+```c++
+void MainWindow::show_soft_keyboard(QWidget *now)
+{
+    if (now == nullptr) {
+        return;
+    }
+    if (now->inherits("QDoubleSpinBox")
+        || (now->inherits("QLineEdit") && now->isEnabled())) {
+        now->blockSignals(true);
+        now->clearFocus();
+        if (now->inherits("QDoubleSpinBox") ) {
+            QTimer::singleShot(0, dynamic_cast<QDoubleSpinBox *>(now),
+                               &QDoubleSpinBox::selectAll);
+        }
+        if (now->inherits("QLineEdit")) {
+            QTimer::singleShot(0, dynamic_cast<QLineEdit *>(now), &QLineEdit::selectAll);
+
+        }
+        keyBoard->setTargetWidget(now);
+        now->blockSignals(false);
+    }
+
+}
+```
 
 ### 显示
 

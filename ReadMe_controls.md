@@ -1,5 +1,6 @@
 
 - [绑定信号QOverload](#绑定信号qoverload)
+- [editingFinished含义](#editingfinished含义)
 - [QToolButton](#qtoolbutton)
   - [1.自带箭头,setArrowType](#1自带箭头setarrowtype)
   - [2.弹出Action,setPopupMode](#2弹出actionsetpopupmode)
@@ -9,6 +10,7 @@
   - [timeout后自动消失](#timeout后自动消失)
 - [QCombobox](#qcombobox)
   - [下拉列表顺序排列](#下拉列表顺序排列)
+  - [Combobox居中显示](#combobox居中显示)
 - [QTablewidget](#qtablewidget)
   - [添加复选框,勾选选中整行](#添加复选框勾选选中整行)
     - [`QTableWidgetSelectionRange(topRow, leftColumn, bottomRow, rightColumn)`](#qtablewidgetselectionrangetoprow-leftcolumn-bottomrow-rightcolumn)
@@ -16,12 +18,17 @@
   - [填充行](#填充行)
   - [`setCellWidget()`](#setcellwidget)
   - [滚动到最后一行](#滚动到最后一行)
+  - [设置表头列表](#设置表头列表)
 
 # 绑定信号QOverload
 
 ```c++
 QOverload<int>::of(&QSpinBox::valueChanged),
 ```
+
+# editingFinished含义
+
+`QLineEdit`中`void editingFinished()`表示 在 `回车` 或者 `返回` 或者 `行编辑失去焦点`的情况发送信号
 
 # QToolButton
 
@@ -80,6 +87,18 @@ dlg->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMaximizeB
 dlg->exec();  // 阻塞，模态效果完整
 ```
 
+## 同意或拒绝
+
+```c++
+QObject::connect(btnYes, &QPushButton::clicked, &dialog, &QDialog::accept);
+QObject::connect(btnNo, &QPushButton::clicked, &dialog, &QDialog::reject);
+if (dialog.exec() == QDialog::Accepted) {
+        // ...
+    } else {
+        // ...
+    }
+```
+
 # QMessageBox
 
 ```c++
@@ -125,6 +144,15 @@ void show_toast(QWidget *parent, const QString &title, const QString &content, i
 QComboBox{
     combobox-popup:0;
 }
+```
+
+## Combobox居中显示
+
+```c++
+	auto model = static_cast<QStandardItemModel*>(ui->frequence->model());
+    for (int i = 0; i < ui->frequence->count(); i++) {
+        model->item(i)->setTextAlignment(Qt::AlignCenter);
+    }
 ```
 
 # QTablewidget
@@ -238,5 +266,16 @@ ui->table->setRowCount(0);
 
 ```c++
 ui->table->scrollToBottom();
+```
+
+## 设置表头列表
+
+```c++
+QString v_headers = ;
+this->setRowCount(cnt_row);
+this->setVerticalHeaderLabels(v_headers);
+QString h_headers = ;
+this->setColumnCount(cnt_col);
+this->setHorizontalHeaderLabels(h_headers);
 ```
 
