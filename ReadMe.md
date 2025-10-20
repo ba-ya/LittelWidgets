@@ -50,8 +50,6 @@
 ## [文件操作](./ReadMe_file.md)
 ## [命名规则](./readme_命名相关)
 
-## [c++](./readme_c++.md)
-
 ## [Cmake](./ReadMe_cmake.md)
 
 ## [Qt标准控件](./ReadMe_controls.md "悬停")
@@ -59,6 +57,8 @@
 ## [QString](./readme_QString.md)
 
 ## [QImageQPixmap](./readme_image_pixmap.md)
+
+## [信号槽五种连接方式](./readme_connect_5种方式.md)
 
 # *Qt常用代码*
 
