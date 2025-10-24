@@ -120,3 +120,12 @@ std::transform(upper.begin(), upper.end(), upper.begin(), ::tolower);
 std::transform(upper.begin(), upper.end(), std::back_inserter(lower), ::tolower);
 ```
 
+这里::tolower可以自己写匿名函数
+
+```
+auto func = [](unsigned char c) -> char {
+
+};
+std::transform(upper.begin(), upper.end(), upper.begin(), func);
+```
+
