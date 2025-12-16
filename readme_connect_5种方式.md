@@ -1,4 +1,4 @@
----
+
 
 ### ✅ 五种连接方式总览
 
@@ -10,7 +10,7 @@
 | 阻塞队列连接（Blocking Queued Connection） | `Qt::BlockingQueuedConnection` | 跨线程         | 槽函数放入事件队列，**发送线程阻塞等待执行完成** |
 | 唯一连接（Unique Connection）              | `Qt::UniqueConnection`         | 任意           | 和其他方式组合使用，确保**不会重复连接**         |
 
----
+
 
 ### 📌 1. 自动连接 `Qt::AutoConnection`（默认）
 

@@ -49,6 +49,13 @@ auto list_file = QDir(dir_shot).entryList(filters, QDir::Files, QDir::Name);
         }
 ```
 
+# 删除目录及其所有文件
+
+```c++
+QString dir;
+QDir(dir).removeRecursively();
+```
+
 # 删除目录下所有文件
 
 ```c++
