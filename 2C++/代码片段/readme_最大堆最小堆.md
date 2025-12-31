@@ -67,6 +67,8 @@ max_heap.push(4);
 std::cout << max_heap.top(); // 输出 4（最大值）
 ```
 
+std::less<int>(a, b) 返回 a < b
+
 #### 最小堆：使用 `greater`
 
 ```cpp
@@ -79,6 +81,8 @@ min_heap.push(4);
 
 std::cout << min_heap.top(); // 输出 1（最小值）
 ```
+
+std::greater<int>(a, b) 返回 a > b, 检查第一个参数是否大于第二个参数
 
 #### 自定义类型（如 pair、struct）
 
