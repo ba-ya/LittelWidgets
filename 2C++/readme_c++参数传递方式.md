@@ -106,3 +106,25 @@ func(ptr);
 > 🎯 **一句话总结**：  
 > “**指针传参**” 是**值传递**，传递的是**地址的副本**；  
 > 只有 `类型*&` 才是**引用传递**，才能真正修改指针本身。
+
+
+
+## 指针传递拷贝指针
+
+```c++
+auto func2 = [&](int *p) {
+    qDebug() << "p addr:"<< &p << ", p val:" << p;
+};
+int var = 1;
+int *p = &var;
+qDebug() << "var addr:" << &var;
+qDebug() << "p addr:"<< &p << ", p val:" << p;
+func2(p);
+```
+```c++
+var addr: 0x5b9bb8f6c4
+p addr: 0x5b9bb8f6e8 , p val: 0x5b9bb8f6c4
+p addr: 0x5b9bb8f608 , p val: 0x5b9bb8f6c4
+```
+
+地址不一样,里面的值是一样的都是var的地址
