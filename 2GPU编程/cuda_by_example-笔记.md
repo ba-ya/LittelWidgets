@@ -173,3 +173,114 @@ void savePPM(const char* filename, unsigned char* pixels, int width, int height)
 
 ```
 
+## C5,线程协作
+
+### 5.2并行线程块的分解
+
+<<<N,1>>>变成<<<1, N>>>, 一个块内可以有多个线程
+
+线程块限制65535, 每个线程块限制线程512
+
+线程id = blockIdx.x * blockDim.x + threadIdx.x
+
+**计算线程块**
+
+<<<(N + 127) / 128, 128>>>, 计算大于或等于N的128的最小倍数
+
+**波纹**
+
+FIX ME:生成动画,不过不知道为什么生成的目录不在build目录而是上一级目录
+
+可以生成波纹视频
+
+![image-20260430150111887](D:\proj\LittelWidgets\2GPU编程\cuda_by_example-笔记.assets\image-20260430150111887.png)
+
+注意:
+
+vscode远程不是图形界面.不能直接预览,新加了函数保存为视频
+
+传指针的时候,想要修改指针,需要传指针的指针,类似下面这种
+
+```
+void init_video_recording(FILE** ffmpeg_pipe, int width, int height) {
+```
+
+### 5.3共享内存和同步
+
+核函数
+
+```c++
+__global__ void dot(float *a, float *b, float *c) {
+    // 共享内存, 块内共享
+    __shared__ float cache[threadsPerBlock];
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    int cacheIdx = threadIdx.x;
+    float tmp = 0;
+    while (tid < N) {
+        tmp += a[tid] * b[tid];
+        tid += blockDim.x * gridDim.x;
+    }
+    // 设置cache中对应位置的值
+    cache[cacheIdx] = tmp;
+    // 线程同步,保证cache填充完毕才进入下面
+    __syncthreads();
+
+    // 归约运算
+    int i = blockDim.x / 2;
+    while (i != 0) {
+        if (cacheIdx < i) {
+            cache[cacheIdx] += cache[cacheIdx + i];
+        }
+        __syncthreads();
+        i /= 2;
+    }
+    if (cacheIdx == 0) {
+        c[blockIdx.x] = cache[0];
+    }
+}
+```
+
+输出:
+
+```
+Does GPU value 2.57236e+13 = 2.57236e+13?
+```
+
+如果归约运算总__syncthreads放到if里面会造成控制流发散,❌
+
+CUDA保证了所有线程都执行了__syncthreads才会执行后面的语句,如果移入if,处理器会挂起
+
+```
+ while (i != 0) {
+        if (cacheIdx < i) {
+            cache[cacheIdx] += cache[cacheIdx + i];
+            __syncthreads();
+        }
+        i /= 2;
+    }
+```
+
+**julia**
+
+```c++
+__global__ void kernel(unsigned char *ptr) {
+    int x = threadIdx.x + blockIdx.x * blockDim.x;
+    int y = threadIdx.y + blockIdx.y * blockDim.y;
+    int offset = x + y * blockDim.x * gridDim.x;
+
+    __shared__ float shared[16][16];
+    const float period = 128.0f;
+    shared[threadIdx.x][threadIdx.y] = 255 * (sinf(x * 2.0f * PI / period) + 1.0f) *
+    (sinf(y * 2.0f * PI / period) + 1.0f) / 4.0f;
+
+    // __syncthreads(); // 注释就是julia1,放开就是julia2
+    ptr[offset * 4 + 0] = 0;
+    ptr[offset * 4 + 1] = shared[15 - threadIdx.x][15-threadIdx.y];
+    ptr[offset * 4 + 2] = 0;
+    ptr[offset * 4 + 3] = 255;
+}
+```
+
+![image-20260430163852115](D:\proj\LittelWidgets\2GPU编程\cuda_by_example-笔记.assets\image-20260430163852115.png)
+
+区别就在于一个有__syncthreads,一个没有,Julia1没有就会有一些没同步
